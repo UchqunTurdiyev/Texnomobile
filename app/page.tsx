@@ -3,6 +3,9 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import { FaInstagram, FaTelegramPlane, FaPhoneAlt } from 'react-icons/fa';
+
 
 function LeadForm() {
   const searchParams = useSearchParams();
@@ -58,17 +61,21 @@ function LeadForm() {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white flex flex-col items-center p-4">
       {/* Logo Section */}
-      <div className="w-32 h-32 bg-[#ffce00] rounded-full flex items-center justify-center mt-10 mb-6 shadow-lg shadow-[#ffce00]/20">
-        <span className="text-black font-bold text-center leading-tight">
-          BOOST<br/>MOBILE<br/><span className="text-[10px]">uz</span>
-        </span>
+    <div className="w-24 h-24 rounded-full flex items-center justify-center mt-10 mb-6 shadow-xl shadow-yellow-500/10 overflow-hidden relative">
+        <Image 
+          src="/texnomobile.png" // public/logo.jpg fayliga ishora
+          alt="Boost Mobile Uz Logo"
+          fill
+          className="object-cover" // Rasmni doira ichiga chiroyli moslash
+          priority // Rasmni tezroq yuklash uchun
+        />
       </div>
 
       <h1 className="text-2xl font-bold text-[#ffce00] mb-2 uppercase tracking-wider">
         Boost Mobile Uz
       </h1>
       <p className="text-gray-400 mb-8 text-center max-w-sm">
-        Perfectum Mobile telefonlari uchun buyurtma qoldiring
+      Buyurtma uchun ariza qoldiring
       </p>
 
       {/* Form Section */}
@@ -133,13 +140,31 @@ function LeadForm() {
             <button
               disabled={loading}
               type="submit"
-              className="w-full bg-[#ffce00] text-black font-bold py-4 rounded-xl mt-4 hover:bg-[#e6b800] active:scale-95 transition-all"
+              className="w-full bg-[#ffce00] cursor-pointer text-black font-bold py-4 rounded-xl mt-4 hover:bg-[#e6b800] active:scale-95 transition-all"
             >
               {loading ? "Yuborilmoqda..." : "BUYURTMA BERISH"}
             </button>
           </form>
         )}
       </div>
+
+        {/* Tezkor aloqa tugmalari */}
+        <div className="flex gap-4 mt-4">
+          <a href="tel:+998941448444" className="flex items-center gap-2 bg-zinc-900 px-4 py-2 rounded-full border border-zinc-800 hover:border-[#ffce00] transition">
+            {/* // eslint-disable-next-line react/jsx-no-undef */}
+            <FaPhoneAlt className="text-[#ffce00] text-sm" />
+            <span className="text-xs font-bold">+998 (94) 144-84-44</span>
+          </a>
+        </div>
+
+        <div className="flex gap-3 mt-3">
+          <a href="https://instagram.com/boostmobileuz" target="_blank" className="p-3 bg-zinc-900 rounded-full border border-zinc-800 text-pink-500 hover:scale-110 transition">
+            <FaInstagram size={20} />
+          </a>
+          <a href="https://t.me/boostmobileuz_admin" target="_blank" className="p-3 bg-zinc-900 rounded-full border border-zinc-800 text-blue-400 hover:scale-110 transition">
+            <FaTelegramPlane size={20} />
+          </a>
+        </div>
 
       <footer className="mt-10 text-gray-500 text-xs">
         © 2026 Boost Mobile Uz. Barcha huquqlar himoyalangan.

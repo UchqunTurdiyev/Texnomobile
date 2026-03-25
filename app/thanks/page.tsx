@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 
 export default function ThanksPage() {
   const [seconds, setSeconds] = useState(10);
@@ -12,7 +13,7 @@ export default function ThanksPage() {
 
     // 10 soniyadan keyin Telegram-ga o'tish
     const timeout = setTimeout(() => {
-      window.location.href = 'https://t.me/texnoboost_admin1'; // Sizning admin link
+      window.location.href = 'https://t.me/boostmobileuz_admin'; // Sizning admin link
     }, 10000);
 
     return () => {
@@ -23,10 +24,16 @@ export default function ThanksPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center p-6 text-center">
-      <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-green-500/20">
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-        </svg>
+     {/* Logo Section */}
+      <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center mt-10 mb-6 shadow-xl shadow-yellow-500/10 overflow-hidden relative">
+        {/* // eslint-disable-next-line react/jsx-no-undef */}
+        <Image 
+          src="/texnomobile.jpg" // public/logo.jpg fayliga ishora
+          alt="Boost Mobile Uz Logo"
+          fill
+          className="object-cover" // Rasmni doira ichiga chiroyli moslash
+          priority // Rasmni tezroq yuklash uchun
+        />
       </div>
       
       <h1 className="text-3xl font-bold text-[#ffce00] mb-4">RAHMAT!</h1>
