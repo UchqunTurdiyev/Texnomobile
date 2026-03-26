@@ -4,6 +4,10 @@ export async function POST(req: Request) {
   const body = await req.json();
   const { name, phone, address, age, utm } = body;
 
+  const now = new Date();
+  const date = now.toLocaleDateString('uz-UZ');
+  const time = now.toLocaleTimeString('uz-UZ', { hour: '2-digit', minute: '2-digit' });
+
   const message = `
 🚀 **Yangi Lid!**
 👤 Ism: ${name}
@@ -11,10 +15,12 @@ export async function POST(req: Request) {
 📍 Manzil: ${address}
 🎂 Yoshi: ${age}
 
+📅 **Sana:** ${date}
+⏰ **Vaqt:** ${time}
+
 --- 📊 UTM Ma'lumotlari ---
 🔗 Source: ${utm.source || 'Direct'}
 📢 Medium: ${utm.medium || '-'}
-📁 Campaign: ${utm.campaign || '-'}
 📝 Content: ${utm.content || '-'}
 🔍 Term: ${utm.term || '-'}
   `;
