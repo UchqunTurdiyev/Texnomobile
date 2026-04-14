@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
-import TargetLeadModel from "@/models/TargetLead";
+import TargetLeadModel from "@/models/TargetLeads";
 
 export async function POST(
   req: NextRequest, 
