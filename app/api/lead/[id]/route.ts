@@ -72,7 +72,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         $set: updateData,
         ...(body.commentText ? { $push: pushData } : {}) 
       },
-      { new: true, runValidators: true }
+      // Qizil xatolikni yo'qotish uchun new: true o'rniga returnDocument: "after" qo'yildi
+      { returnDocument: "after", runValidators: true }
     ).lean();
 
     if (!updatedLead) {
@@ -80,9 +81,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     // --- META PURCHASE INTEGRATSIYASI ---
-    // Agar status "To'lov qilindi" ga o'zgargan bo'lsa Meta-ga yuboramiz
-    // DIQQAT: 'To'lov qilindi' so'zi CRM'dagi ustun nomi bilan bir xil bo'lishi shart!
+    // Vercel loglarida frontend'dan nima kelayotganini ko'rib turish uchun
+    console.log("Hozirgi status:", body.status);
+
+    // Agar status "TO'LOV QILDI" ga o'zgargan bo'lsa Meta-ga yuboramiz
     if (body.status === "TO'LOV QILDI") {
+       console.log("Meta API ga yuborilmoqda...");
        await sendMetaPurchase(updatedLead);
     }
     // ------------------------------------
