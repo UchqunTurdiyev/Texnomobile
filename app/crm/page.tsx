@@ -181,7 +181,7 @@ const LeadCard = ({ lead, setLeads, isOverlay = false }: { lead: Lead; setLeads:
         <div className="flex flex-col gap-2">
           <DatePicker 
             selected={pickedDate} 
-            onChange={(date) => setPickedDate(date)} 
+            onChange={(date: Date | null) => setPickedDate(date)}
             showTimeSelect 
             timeFormat="HH:mm"
             timeIntervals={15}

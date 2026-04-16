@@ -82,7 +82,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // --- META PURCHASE INTEGRATSIYASI ---
     // Agar status "To'lov qilindi" ga o'zgargan bo'lsa Meta-ga yuboramiz
     // DIQQAT: 'To'lov qilindi' so'zi CRM'dagi ustun nomi bilan bir xil bo'lishi shart!
-    if (body.status === "To'lov qilindi") {
+    if (body.status === "TO'LOV QILDI") {
        await sendMetaPurchase(updatedLead);
     }
     // ------------------------------------
