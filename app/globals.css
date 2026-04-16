@@ -24,3 +24,41 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+
+/* app/globals.css fayli oxiriga qo'shing */
+
+/* Kalendar fonini to'q qilish */
+.react-datepicker {
+  background-color: #1a1a1a !important;
+  color: white !important;
+  border-color: #4b5563 !important;
+}
+
+.react-datepicker__header {
+  background-color: #262626 !important;
+  border-bottom: 1px solid #4b5563 !important;
+}
+
+.react-datepicker__current-month, 
+.react-datepicker__day-name, 
+.react-datepicker__time-name {
+  color: #d1d5db !important;
+}
+
+/* Kunlarni yozuvini oq qilish */
+.react-datepicker__day {
+  color: #e5e7eb !important;
+}
+
+.react-datepicker__day:hover {
+  background-color: #3f3f46 !important;
+}
+
+/* Tanlangan kunni ko'k/sariq qilish */
+.react-datepicker__day--selected, 
+.react-datepicker__day--keyboard-selected {
+  background-color: #2563eb !important; /* Ko'k rang */
+  color: white !important;
+  font-weight: bold !important;
+}

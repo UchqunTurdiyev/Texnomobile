@@ -20,6 +20,9 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+// DatePicker import qilindi
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css"; // Default stillari
 
 // --- 1. Turlar (Interfaces) ---
 interface LeadComment {
@@ -37,7 +40,7 @@ interface Lead {
   createdAt: string;
   comments: LeadComment[];
   lastComment?: string;
-  reminderDate?: string; // Bazadagi reminderDate
+  reminderDate?: string; 
   utm_source?: string;
   utm_medium?: string;
   utm_campaign?: string;
@@ -67,8 +70,35 @@ const LeadCard = ({ lead, setLeads, isOverlay = false }: { lead: Lead; setLeads:
   const [showHistory, setShowHistory] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  
+  // Kalendar uchun state
+  const [pickedDate, setPickedDate] = useState<Date | null>(
+    lead.reminderDate ? new Date(lead.reminderDate) : null
+  );
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: lead.id });
+
+  const handleSaveReminder = async () => {
+    if (!pickedDate) return;
+
+    try {
+      const res = await fetch(`/api/lead/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reminderDate: pickedDate.toISOString() }),
+      });
+
+      if (res.ok) {
+        // State'ni yangilash
+        setLeads((prev) => prev.map(l => l.id === lead.id ? { ...l, reminderDate: pickedDate.toISOString() } : l));
+        alert("Eslatma muvaffaqiyatli saqlandi!");
+      } else {
+        alert("Xatolik yuz berdi!");
+      }
+    } catch (error) {
+      console.error("Saqlashda xatolik:", error);
+    }
+  };
 
   const style = {
     transform: CSS.Translate.toString(transform),
@@ -89,21 +119,6 @@ const LeadCard = ({ lead, setLeads, isOverlay = false }: { lead: Lead; setLeads:
     navigator.clipboard.writeText(lead.phone);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-  };
-
-  const handleReminderChange = async (dateValue: string) => {
-    // UI yangilash
-    setLeads((prev) => prev.map(l => l.id === lead.id ? { ...l, reminderDate: dateValue } : l));
-    // Bazaga saqlash
-    try {
-      await fetch(`/api/lead/${lead.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reminderDate: dateValue }),
-      });
-    } catch (err) {
-      console.error("Reminder error", err);
-    }
   };
 
   const handleAddComment = async () => {
@@ -161,16 +176,27 @@ const LeadCard = ({ lead, setLeads, isOverlay = false }: { lead: Lead; setLeads:
         </div>
       </div>
 
-      {/* ESLATMA VAQTINI BELGILASH QISMI */}
-      <div className="mb-2 p-2 bg-[#0f172a] rounded border border-gray-800">
-        <label className="text-[9px] text-gray-500 block mb-1 uppercase tracking-tighter">🔔 Eslatma o&apos;rnatish</label>
-        <input 
-          type="datetime-local"
-          value={lead.reminderDate ? lead.reminderDate.slice(0, 16) : ""}
-          onChange={(e) => handleReminderChange(e.target.value)}
-          onPointerDown={(e) => e.stopPropagation()}
-          className="w-full bg-transparent text-[14px] text-orange-400 outline-none cursor-pointer"
-        />
+      {/* KALENDAR QISMI */}
+      <div className="bg-[#1a1a1a] border border-gray-700 rounded-lg p-2 mb-3 mt-2" onPointerDown={(e) => e.stopPropagation()}>
+        <div className="flex flex-col gap-2">
+          <DatePicker 
+            selected={pickedDate} 
+            onChange={(date) => setPickedDate(date)} 
+            showTimeSelect 
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            timeCaption="Vaqt"
+            dateFormat="dd/MM/yyyy HH:mm"
+            placeholderText="Eslatma vaqtini tanlang..."
+            className="w-full bg-[#252525] border border-gray-600 rounded px-2 py-1 text-xs text-white outline-none cursor-pointer"
+          />
+          <button 
+            onClick={handleSaveReminder}
+            className="w-full bg-orange-600 hover:bg-orange-500 text-white text-[10px] font-bold py-1.5 rounded transition-colors cursor-pointer"
+          >
+            VAQTNI SAQLASH
+          </button>
+        </div>
       </div>
 
       {(lead.address || lead.age) && (
@@ -187,17 +213,6 @@ const LeadCard = ({ lead, setLeads, isOverlay = false }: { lead: Lead; setLeads:
               <span className="text-gray-300">{lead.age}</span>
             </div>
           )}
-        </div>
-      )}
-
-      {(lead.utm_campaign || lead.utm_term) && (
-        <div className="my-2 p-2 bg-[#0f172a] rounded border border-gray-800 text-[10px] space-y-1">
-          <div className="flex justify-between gap-2 text-gray-400">
-             <span>Camp:</span> <span className="text-orange-400 truncate">{lead.utm_campaign || '—'}</span>
-          </div>
-          <div className="flex justify-between gap-2 text-gray-400">
-             <span>Creative:</span> <span className="text-purple-400 font-bold truncate">{lead.utm_term || '—'}</span>
-          </div>
         </div>
       )}
 
@@ -259,7 +274,7 @@ export default function CRMPage() {
         body: JSON.stringify({
           phone: lead.phone,
           name: lead.fullName,
-          value: 2000000, // Kurs narxi
+          value: 2000000, 
           currency: 'UZS'
         }),
       });
@@ -274,8 +289,13 @@ export default function CRMPage() {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  // --- OGOHLANTIRUV TIZIMI ---
+  // --- OGOHLANTIRUV TIZIMI (Taymer) ---
   useEffect(() => {
+    // Ekranda Notification chiqishi uchun ruxsat so'rash
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
     const interval = setInterval(() => {
       const now = new Date();
       const yil = now.getFullYear();
@@ -287,9 +307,12 @@ export default function CRMPage() {
       const hozir = `${yil}-${oy}-${kun}T${soat}:${minut}`;
       
       leads.forEach(lead => {
+        // Agar lidning eslatma vaqti hozirgi vaqtga teng bo'lsa
         if (lead.reminderDate && lead.reminderDate.slice(0, 16) === hozir) {
+          // 1. O'rtadagi katta modalni ochadi
           setReminderAlert(lead);
           
+          // 2. O'ng burchakdan kompyuter notification'ini chiqaradi
           if ("Notification" in window && Notification.permission === "granted") {
             new Notification(`🔔 ESLATMA: ${lead.fullName}`, {
               body: `${lead.phone} bilan bog'lanish vaqti bo'ldi!`,
@@ -297,16 +320,12 @@ export default function CRMPage() {
           }
         }
       });
-    }, 60000);
+    }, 60000); // Har daqiqada tekshiradi
 
     return () => clearInterval(interval);
   }, [leads]);
 
   useEffect(() => {
-    if ("Notification" in window && Notification.permission === "default") {
-      Notification.requestPermission();
-    }
-
     fetch("/api/lead")
       .then(res => res.json())
       .then(data => {
@@ -336,17 +355,14 @@ export default function CRMPage() {
     const newStatus = STATUSES.includes(overIdStr) ? overIdStr : leads.find(l => l.id === overIdStr)?.status;
 
     if (activeLead && newStatus && activeLead.status !== newStatus) {
-      // UI yangilash
       setLeads((prev) => prev.map(l => l.id === activeIdStr ? { ...l, status: newStatus } : l));
       
-      // Bazani yangilash
       await fetch(`/api/lead/${activeIdStr}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
       });
 
-      // --- META CONVERSION API TRIGGER ---
       if (newStatus === "TO'LOV QILDI") {
         notifyMetaPurchase(activeLead);
       }
@@ -359,7 +375,7 @@ export default function CRMPage() {
     <div className="min-h-screen bg-[#020617] p-4 relative custom-scrollbar">
       
       {/* OGOHLANTIRUV MODALI */}
-      {reminderAlert && (
+      {/* {reminderAlert && (
         <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
           <div className="bg-[#1e293b] border-2 border-orange-500 p-8 rounded-2xl max-w-sm w-full text-center shadow-[0_0_50px_rgba(249,115,22,0.4)]">
             <div className="text-6xl mb-4 animate-bounce">🔔</div>
@@ -374,7 +390,7 @@ export default function CRMPage() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
 
       <div className="flex gap-4 overflow-x-auto select-none pb-6">
         <DndContext 

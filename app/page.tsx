@@ -5,6 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FaInstagram, FaTelegramPlane, FaPhoneAlt } from 'react-icons/fa';
 
+
 // API uchun ma'lumotlar strukturasi
 type LeadPayload = {
   fullName: string;
